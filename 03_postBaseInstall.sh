@@ -14,7 +14,7 @@ echo "-------------------------------------------------"
 
 
 echo """"""INCLUDING MULTILIB REPOSITORY AND ENABLING PARALLEL DOWNLOADS""""""
-sed '/ParallelDownloads = 5/s/^#//' -i /etc/pacman.conf
+sudo sed '/ParallelDownloads = 5/s/^#//' -i /etc/pacman.conf
 echo """"""Uncomment the [multilib] repository line, its mirrorlist include line and save it""""""
 sleep 10
 sudo vim /etc/pacman.conf
@@ -42,12 +42,62 @@ echo "-------------------------------------------------"
 
 
 echo """"""INSTALLING MY NECESSARY PACKAGES""""""
-sudo pacman -S pacman-contrib p7zip unrar zip unzip gvfs gvfs-mtp youtube-dl vlc libreoffice-fresh firefox htop neofetch gdb geany bleachbit ranger git curl wget gvim vim-airline vim-airline-themes vim-syntastic qbittorrent xfce4-terminal --noconfirm
+sudo pacman -S pacman-contrib p7zip unrar zip unzip gvfs gvfs-mtp youtube-dl vlc libreoffice-fresh firefox htop neofetch gdb geany bleachbit ranger git curl wget gvim vim-airline vim-airline-themes vim-syntastic qbittorrent xfce4-terminal keepassxc --noconfirm
 echo "-------------------------------------------------"
-
+ 
 
 echo """"""INSTALLING PACKAGES FOR PLAYING SOUND""""""
 sudo pacman -S pulseaudio pulseaudio-alsa pavucontrol alsa-utils alsa-plugins alsa-lib alsa-firmware gstreamer volumeicon --noconfirm
+echo "-------------------------------------------------"
+
+
+echo """"""MAKING USE OF ALL CORES FOR COMPILING""""""
+echo """"""Search for "MAKEFLAGS" and replace the "-j2" with "-j$(nproc)"
+sudo vim /etc/makepkg.conf
+echo "-------------------------------------------------"
+
+
+echo """"""CLEANING PACMAN CACHE HOOK""""""
+sudo mkdir /etc/pacman.d/hooks
+sudo touch /etc/pacman.d/hooks/clean_package_cache.hook
+cat > /etc/pacman.d/hooks/clean_package_cache.hook <<EOF
+[Trigger]
+Operation = Upgrade
+Operation = Install
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = CLEANING PACMAN CACHE...
+When = PostTransaction
+Exec = /usr/bin/paccache -r
+EOF
+echo "-------------------------------------------------"
+
+
+echo """"""CLEANING PACMAN CACHE HOOK""""""
+sudo touch /etc/pacman.d/hooks/pacdiff.hook
+cat > /etc/pacman.d/hooks/pacdiff.hook <<EOF
+
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = CHECKING FOR PACNEW FILES...
+When = PostTransaction
+Exec = /usr/bin/pacdiff
+EOF
+echo "-------------------------------------------------"
+
+
+echo """"""SETTING JOURNAL SIZE LIMIT""""""
+sudo sed '/SystemMaxUse/s/^#//' -i /etc/systemd/journald.conf
+sudo systemctl restart systemd-journald.service
 echo "-------------------------------------------------"
 
 
