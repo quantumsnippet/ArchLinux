@@ -37,7 +37,7 @@ Script 3
 ```
 
 ## My Documentation  
-My documentation for installing Arch Linux is in `archlinux_installation.txt` file. I have explained the procedure that goes into installing Arch Linux in that file. I highly recommend checking out the official [Arch Linux Installation Guide](https://wiki.archlinux.org/title/Installation_guide) and the [ArchWiki](https://wiki.archlinux.org/) as well before carrying out the installation process.  
+My documentation for installing Arch Linux is in [`archlinux_installation.txt`](https://github.com/quantumsnippet/ArchLinux/blob/master/archlinux_installation.txt) file. I have explained the procedure that goes into installing Arch Linux in that file. I highly recommend checking out the official [Arch Linux Installation Guide](https://wiki.archlinux.org/title/Installation_guide) and the [ArchWiki](https://wiki.archlinux.org/) as well before carrying out the installation process.  
 
 
 
