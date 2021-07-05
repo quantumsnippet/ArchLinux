@@ -1,51 +1,45 @@
-echo "-------------------------------------------------"
-echo """"""TIME ZONE""""""
+echo "TIME ZONE"
 ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
 hwclock --systohc
-echo "-------------------------------------------------"
+echo "################################################################"
 
-
-echo """"""LOCALIZATION""""""
+echo "LOCALIZATION"
 sed '/en_IN UTF-8/s/^#//' -i /etc/locale.gen
 locale-gen
 echo LANG=en_IN.UTF-8 > /etc/locale.conf
-echo "-------------------------------------------------"
+echo "################################################################"
 
-
-echo """"""HOSTNAME""""""
+echo "HOSTNAME"
 echo arch > /etc/hostname
 cat > /etc/hosts <<EOF
 127.0.0.1   localhost
 ::1         localhost
 127.0.1.1   arch.localdomain	arch
 EOF
-echo "-------------------------------------------------"
+echo "################################################################"
 
-
-echo """"""NETWORK CONFIGURATION""""""
+echo "NETWORK CONFIGURATION"
 pacman -S networkmanager --noconfirm
 systemctl enable NetworkManager
-echo "-------------------------------------------------"
+echo "################################################################"
 
-
-echo """"""ROOT PASSWORD""""""
+echo "ROOT PASSWORD"
 passwd
-echo "-------------------------------------------------"
+echo "################################################################"
 
-
-echo """"""BOOT LOADER""""""
+echo "INSTALLATION OF GRUB BOOT LOADER"
 pacman -S grub efibootmgr os-prober ntfs-3g intel-ucode --noconfirm
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
+echo "################################################################"
 
-echo """"""ENABLING OS_PROBER TO DETECT OTHER OPERATING SYSTEMS""""""
+echo "ENABLING OS_PROBER TO DETECT OTHER OPERATING SYSTEMS"
 echo 'GRUB_DISABLE_OS_PROBER=false' > /etc/default/grub
 echo 'GRUB_DEFAULT=saved' > /etc/default/grub
 echo 'GRUB_SAVEDEFAULT=true' > /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
-echo "-------------------------------------------------"
+echo "################################################################"
 
-
-echo """"""EXIT AND REBOOT""""""
+echo "EXIT AND REBOOT"
 exit
 exit
