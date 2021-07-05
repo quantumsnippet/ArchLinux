@@ -1,75 +1,75 @@
-ARCHLINUX INSTALL PROCEDURE
+ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
 
 1) Verify the boot mode
 
-    # ls /sys/firmware/efi/efivars
+   # ls /sys/firmware/efi/efivars
 
-    If you get a bunch of lines, all is well.
+   If you get a bunch of lines, all is well.
 
-2)  Connect to the internet
+2) Checking internet connection
 
-    # ping -c 5 archlinux.org
+   # ping -c 5 archlinux.org
 
-    It will only ping 5 times
+   It will only ping 5 times.
 
-3) Update the system clock
+3) Updating the system clock
 
-    # timedatectl set-ntp true
+   # timedatectl set-ntp true
 
-    We tell our computer to sync the date and time. At this point we do NOT say what timezone we are in.
+   We tell our computer to sync the date and time. At this point we do NOT say what timezone we are in.
 
-4) Partition the disks
+4) Partitioning the disks
 
-    # lsblk
+   # lsblk
 
-    Check BEFORE PARTITION correctly.
+   Check your system's partition layout BEFORE INSTALLING.
 
-    # cfdisk
+   # cfdisk
 
-    Here you do the necessary partitioning.
+   Here you do the necessary partitioning.
 
-    swap partition - 2G - sda8 - Linux swap
-    /boot partition - 512M - sda9 - EFI System
-    / partition - Rest of the system - sda10 - Linux filesystem
+   swap partition - 2G - sda8 - Linux swap
+   /boot partition - 512M - sda9 - EFI System
+   / partition - Rest of the system - sda10 - Linux filesystem
 
-    Do the partitioning and write it. Check your partitioning again using #lsblk.
+   Do the partitioning and write it. Check your partitioning again using #lsblk.
 
-5) Format the partitions
+5) Formatting the partitions
 
-    Format the EFI partition.
-    # mkfs.fat -F32 /dev/sda9
+   Format the EFI partition.
+   # mkfs.fat -F32 /dev/sda9
 
-    Format the swap partition and activate it.
-    # mkswap /dev/sda8
-    # swapon /dev/sda8
+   Format the swap partition and activate it.
+   # mkswap /dev/sda8
+   # swapon /dev/sda8
 
-    Format the root partition
-    mkfs.ext4 /dev/sda10
+   Format the root partition
+   # mkfs.ext4 /dev/sda10
 
-6) Mount the File Systems
+6) Mounting the File Systems
 
-    We need to mount our created partitions into our linux hierarchy. First we need to mount the root partition into /mnt. Then we create /mnt/boot in which we mount the boot partition.
-    # mount /dev/sda10 /mnt
-    # mkdir /mnt/boot
-    # mount /dev/sda9 /mnt/boot
+   We need to mount our created partitions into our linux hierarchy. First we need to mount the root partition into /mnt. Then we create /mnt/boot in which we mount the boot partition.
+   # mount /dev/sda10 /mnt
+   # mkdir /mnt/boot
+   # mount /dev/sda9 /mnt/boot
 
-7) Install essential packages (using pacstrap)
+7) Install essential packages using pacstrap
 
-    # pacstrap /mnt base base-devel linux-lts linux-lts-headers linux-firmware nano vim bash-completion
+   # pacstrap /mnt base base-devel linux-lts linux-lts-headers linux-firmware nano vim bash-completion
 
 8) FSTAB
 
-    We generate a fstab (File System Table) file so linux will know what partitions we have like swap, boot and root.
+   We generate a fstab (File System Table) file so linux will know what partitions we have like swap, boot and root.
 
-    # genfstab -U /mnt >> /mnt/etc/fstab
+   # genfstab -U /mnt >> /mnt/etc/fstab
 
-    You should have the partitions as you have configured when you open the file with
-    # vim /mnt/etc/fstab
+   You should have the partitions as you have configured when you open the file with
+   # vim /mnt/etc/fstab
 
 9) CHROOT
 
-    Moving inside the future linux system and changing elements there.
-    # arch-chroot /mnt
+   Moving inside the future linux system and changing elements there.
+   # arch-chroot /mnt
 
 10) Time Zone
 
@@ -81,7 +81,7 @@ ARCHLINUX INSTALL PROCEDURE
 
     vim /etc/locale.gen
 
-    Uncomment the language en_IN UTF-8 and save it. Generate the locale.
+    Uncomment the language en_IN UTF-8 and save it. Now generate the locale.
     # locale-gen
 
     Also set the variable LANG or language to reflect the same choice.
@@ -97,7 +97,7 @@ ARCHLINUX INSTALL PROCEDURE
 
     127.0.0.1   localhost
     ::1         localhost
-    127.0.1.1   MyHostname.localdomain MyHostname
+    127.0.1.1   MyHostname.localdomain  MyHostname
 
 13) Network Configuration
 
@@ -110,10 +110,22 @@ ARCHLINUX INSTALL PROCEDURE
 
     # passwd
 
-15) Boot loader
+15) Boot loader (GRUB)
 
-    # pacman -S grub efibootmgr os-prober ntfs-3g
+    # pacman -S grub efibootmgr os-prober ntfs-3g intel-ucode
     # grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+    # grub-mkconfig -o /boot/grub/grub.cfg
+
+    We have to enable os_prober to detect other operating systems present on your system. Also I have configured GRUB to remember your previously booted system. This is better and more convinient.
+
+    # vim /etc/default/grub
+
+    And uncomment or add the below three lines.
+        GRUB_DISABLE_OS_PROBER=false
+        GRUB_DEFAULT=saved
+        GRUB_SAVEDEFAULT=true
+
+    Regenerate the GRUB configuration file again.
     # grub-mkconfig -o /boot/grub/grub.cfg
 
 16) Unmount disks and Reboot
@@ -132,15 +144,15 @@ ARCHLINUX INSTALL PROCEDURE
     # useradd darshan
     # passwd darshan
 
-    Type the password here. Then you have to run visudo as root to edit the sudoers file
+    Type the password here. Then you have to run visudo as root with vim as the editor specified explicitly to edit the /etc/sudoers file.
 
-    # visudo
+    # EDITOR=vim visudo
 
-    Uncomment the wheel group. It is the line which begins with wheel and save it.
+    Uncomment the line containing wheel group. It is the line which begins with wheel and save it.
 
     %wheel        ALL=(ALL)       ALL
 
-    Add 'darshan' to the wheel group user usermod command.
+    Add 'darshan' to the wheel group using usermod command.
 
     # usermod -aG wheel darshan
 
@@ -156,52 +168,52 @@ ARCHLINUX INSTALL PROCEDURE
             $ sudo whoami
             root
 
-18) Include the 'multilib' repository
+18) Include the 'multilib' repository and enable Parallel Downloads
 
     $ sudo vim /etc/pacman.conf
 
-    Uncomment the repository line and save it.
+    Uncomment the below line to enable parallel downloads.
+        ParallelDownloads = 5
 
-    [multilib]
-    include = /etc/pacman.d/mirrorlist
+    Uncomment the below two lines to include the multilib repository and save it.
 
-19) Update the system.
+        [multilib]
+        include = /etc/pacman.d/mirrorlist
 
-20) X Server, Desktop Environment(DE), Login Display Manager(DM)
+19) Update and sync the repositories once before going any furthur.
+
+    $ sudo pacman -Syyu
+
+20) Installation of X Server(XORG), Desktop Environment(DE), Login Display Manager(DM)
 
     Before installing a DE, you will need to install the X Server first. Once it is completed, install DE.
+
     $ sudo pacman -S xorg
+
+    I prefer the MATE Desktop Environment.
     $ sudo pacman -S mate mate-extra
 
     You will also need a display manager to log in to your desktop environment. For the ease, you can install LXDM.
     $ sudo pacman -S lxdm
 
-    Once installed, you can enable to start each time you reboot your system.
+    Once installed, you can enable LXDM to start each time you reboot your system.
     $ sudo systemctl enable lxdm.service
-
-    Reboot your system and you will see the LXDM login screen, select your desktop environment from the list and login.
 
 21) Getting Wi-Fi connection
 
-    Broadcom BCM 43142 requires broadcom-wl-dkms package.
+    My machine has the Broadcom BCM 43142 driver for Wifi. Figure out the wifi driver that your machine uses. Broadcom BCM 43142 requires broadcom-wl-dkms package.
+
     $ sudo pacman -S broadcom-wl-dkms
 
     To load the new module, run the following commands as root:
-    # rmmod b43 b43legacy bcm43xx bcma brcm80211 brcmfmac brcmsmac ssb wl
-    # modprobe wl
+    $ sudo rmmod b43 b43legacy bcm43xx bcma brcm80211 brcmfmac brcmsmac ssb wl
+    $ sudo modprobe wl
 
     Also, install Network Manager Applet to get the Wifi icon applet.
     $ sudo pacman -S network-manager-applet
 
-    And reboot the system to get Wi-Fi.
-
-22) Install AUR helper yay
-
-23) Install pamac-aur, google-chrome, downgrade, mate-tweak and other packages you want from AUR and the repositories.
-
-    INSTALLING THESE PACKAGES IS A MUST.
+22) INSTALLING THESE PACKAGES IS A MUST FOR ME.
         pacman-contrib
-        network-manager-applet
         p7zip
         unrar
         zip
@@ -229,7 +241,11 @@ ARCHLINUX INSTALL PROCEDURE
         xfce4-terminal
         keepassxc
 
-24) Get the Sound working
+23) Reboot the system. The LXDM login manager and MATE DE along with the Wifi will work after rebooting the system.
+
+    $ sudo reboot
+
+24) Get the Sound working on your system
 
     $ sudo pacman -S pulseaudio pulseaudio-alsa pavucontrol alsa-utils alsa-plugins alsa-lib alsa-firmware gstreamer volumeicon
 
@@ -242,25 +258,17 @@ ARCHLINUX INSTALL PROCEDURE
 
     $ sudo tlp-stat
 
-    Do the necessary implementations and generate the symlinks and enable the services.
+    Do the necessary implementations and generate the symlinks and enable the tlp services.
 
-26) Install intel-ucode
+26) Use all cores for compiling.
 
-    $ sudo pacman -S intel-ucode
+	Go to /etc/makepkg.conf file. Search for "MAKEFLAGS". Replace the "-j2" with "-j$(nproc)".
 
-    Regenerate the grub.cfg.
-    $ sudo grub-mkconfig -o /boot/grub/grub.cfg
+	$ sudo vim /etc/makepkg.conf
 
-27) Use all cores for compiling.
-
-	Go to /etc/makepkg.conf file.
-
-	Search for "MAKEFLAGS". Replace the "-j2" with "-j$(nproc)".
 	This uses all cores when compiling now.
 
-28) Configure the keyboard shortcuts in the DE and change the DE settings.
-
-29) Pacman hooks to clean package cache and to deal with .pacnew files
+27) Pacman hooks to clean package cache and to deal with .pacnew files
 
         $ sudo mkdir /etc/pacman.d/hooks
 
@@ -298,15 +306,24 @@ ARCHLINUX INSTALL PROCEDURE
                         When = PostTransaction
                         Exec = /usr/bin/pacdiff
 
-30) Journal Size Limit
+28) Journal Size Limit
 
         The maximum size of the persistent journal can be controlled by uncommenting and changing the following:
 
-                # vim /etc/systemd/journald.conf
+        $ sudo vim /etc/systemd/journald.conf
 
-                SystemMaxUse=100M
+			SystemMaxUse=100M
 
         Restart the systemd-journald.service after changing this setting to apply the new limit.
-        # systemctl restart systemd-journald.service
+
+        $ sudo systemctl restart systemd-journald.service
+
+29) Install AUR helper like yay.
+
+	Download the PKGBUILD of yay from https://aur.archlinux.org/packages/yay/ .
+
+	Install pamac-aur, google-chrome, brave-bin, downgrade, mate-tweak and other packages you want from AUR.
+
+30) Configure the keyboard shortcuts in the DE and change the DE settings.
 
 31) Update and reboot.
