@@ -1,9 +1,9 @@
 # ArchLinux
-My Arch Linux Installation Scripts for UEFI systems  
+My Arch Linux Installation Scripts for `UEFI` systems  
 
 The bash scripts that I have written for installing Arch Linux (UEFI only) are heavily customised according to my preferences. So examine the scripts before using them.  
 
-My Arch Linux setup is simple and it **doesn't** use LUKS/LVM/RAID disk encryption. Ext4 filesystem is used for my root partition along with swap and EFI partition for boot. I prefer MATE as my Desktop Environment on my machines.  
+My Arch Linux setup is simple and it **doesn't** use LUKS/LVM/RAID disk encryption. `Ext4` filesystem is used for my root partition along with swap and EFI partition for boot. I prefer `MATE` as my Desktop Environment on my machines.  
 
 There are three scripts that I have written for installing Arch Linux.  
 <ol>
@@ -36,9 +36,8 @@ Script 3
     ./03_postBaseInstall.sh   
 ```
 
-
 ## My Documentation  
-My documentation for installing Arch Linux is in `archlinux_installation.txt` file. I have explained the procedure that goes for installing Arch Linux in that file.  
+My documentation for installing Arch Linux is in `archlinux_installation.txt` file. I have explained the procedure that goes into installing Arch Linux in that file. I highly recommend checking out the official [Arch Linux Installation Guide](https://wiki.archlinux.org/title/Installation_guide) and the [ArchWiki](https://wiki.archlinux.org/) as well before carrying out the installation process.  
 
 
 
