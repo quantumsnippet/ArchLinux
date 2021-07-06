@@ -28,20 +28,20 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
 
    Here you do the necessary partitioning.
 
-   swap partition - 2G - sda8 - Linux swap
-   /boot partition - 512M - sda9 - EFI System
-   / partition - Rest of the system - sda10 - Linux filesystem
+   /boot partition		- 512M				 - sda8	 - EFI System
+   SWAP partition		- 4G				 - sda9  - Linux swap
+   / (Root) partition 	- Rest of the system - sda10 - Linux filesystem
 
    Do the partitioning and write it. Check your partitioning again using #lsblk.
 
 5) Formatting the partitions
 
    Format the EFI partition.
-   # mkfs.fat -F32 /dev/sda9
+   # mkfs.fat -F32 /dev/sda8
 
    Format the swap partition and activate it.
-   # mkswap /dev/sda8
-   # swapon /dev/sda8
+   # mkswap /dev/sda9
+   # swapon /dev/sda9
 
    Format the root partition
    # mkfs.ext4 /dev/sda10
@@ -51,11 +51,11 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
    We need to mount our created partitions into our linux hierarchy. First we need to mount the root partition into /mnt. Then we create /mnt/boot in which we mount the boot partition.
    # mount /dev/sda10 /mnt
    # mkdir /mnt/boot
-   # mount /dev/sda9 /mnt/boot
+   # mount /dev/sda8 /mnt/boot
 
 7) Install essential packages using pacstrap
 
-   # pacstrap /mnt base base-devel linux-lts linux-lts-headers linux-firmware nano vim bash-completion
+   # pacstrap /mnt base base-devel linux-lts linux-lts-headers linux-firmware nano vim bash-completion intel-ucode
 
 8) FSTAB
 
@@ -112,20 +112,8 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
 
 15) Boot loader (GRUB)
 
-    # pacman -S grub efibootmgr os-prober ntfs-3g intel-ucode
+    # pacman -S grub efibootmgr os-prober ntfs-3g
     # grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
-    # grub-mkconfig -o /boot/grub/grub.cfg
-
-    We have to enable os_prober to detect other operating systems present on your system. Also I have configured GRUB to remember your previously booted system. This is better and more convinient.
-
-    # vim /etc/default/grub
-
-    And uncomment or add the below three lines.
-        GRUB_DISABLE_OS_PROBER=false
-        GRUB_DEFAULT=saved
-        GRUB_SAVEDEFAULT=true
-
-    Regenerate the GRUB configuration file again.
     # grub-mkconfig -o /boot/grub/grub.cfg
 
 16) Unmount disks and Reboot
@@ -143,20 +131,20 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
     Create 'darshan' user with sudo access.
     # useradd darshan
     # passwd darshan
+    
+    Add 'darshan' to the wheel group using usermod command.
 
-    Type the password here. Then you have to run visudo as root with vim as the editor specified explicitly to edit the /etc/sudoers file.
+    # usermod -aG wheel darshan
+    
+    Then you have to run visudo as root with vim as the editor specified explicitly to edit the /etc/sudoers file.
 
     # EDITOR=vim visudo
 
     Uncomment the line containing wheel group. It is the line which begins with wheel and save it.
+			%wheel        ALL=(ALL)       ALL
 
-    %wheel        ALL=(ALL)       ALL
-
-    Add 'darshan' to the wheel group using usermod command.
-
-    # usermod -aG wheel darshan
-
-    Okay so now test whether you really have sudo power.
+	[OPTIONAL]
+	Okay so now you can test whether you really have sudo power.
     17.1) Use the su to switch to the new user account that you created.
             # su darshan
 
@@ -168,51 +156,36 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
             $ sudo whoami
             root
 
-18) Include the 'multilib' repository and enable Parallel Downloads
+18) Include the 'multilib' repository and enable "ParallelDownloads"
 
-    $ sudo vim /etc/pacman.conf
+    # vim /etc/pacman.conf
 
     Uncomment the below line to enable parallel downloads.
         ParallelDownloads = 5
 
     Uncomment the below two lines to include the multilib repository and save it.
-
-        [multilib]
+		[multilib]
         include = /etc/pacman.d/mirrorlist
 
 19) Update and sync the repositories once before going any furthur.
 
-    $ sudo pacman -Syyu
+    # pacman -Syyu
 
 20) Installation of X Server(XORG), Desktop Environment(DE), Login Display Manager(DM)
 
     Before installing a DE, you will need to install the X Server first. Once it is completed, install DE.
-
-    $ sudo pacman -S xorg
+	# pacman -S xorg
 
     I prefer the MATE Desktop Environment.
-    $ sudo pacman -S mate mate-extra
+	# pacman -S mate mate-extra
 
     You will also need a display manager to log in to your desktop environment. For the ease, you can install LXDM.
-    $ sudo pacman -S lxdm
+    # pacman -S lxdm
 
     Once installed, you can enable LXDM to start each time you reboot your system.
-    $ sudo systemctl enable lxdm.service
+    # systemctl enable lxdm.service
 
-21) Getting Wi-Fi connection
-
-    My machine has the Broadcom BCM 43142 driver for Wifi. Figure out the wifi driver that your machine uses. Broadcom BCM 43142 requires broadcom-wl-dkms package.
-
-    $ sudo pacman -S broadcom-wl-dkms
-
-    To load the new module, run the following commands as root:
-    $ sudo rmmod b43 b43legacy bcm43xx bcma brcm80211 brcmfmac brcmsmac ssb wl
-    $ sudo modprobe wl
-
-    Also, install Network Manager Applet to get the Wifi icon applet.
-    $ sudo pacman -S network-manager-applet
-
-22) INSTALLING THESE PACKAGES IS A MUST FOR ME.
+21) Installing my required packages
         pacman-contrib
         p7zip
         unrar
@@ -240,10 +213,25 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
         qbittorrent
         xfce4-terminal
         keepassxc
+        gimp
+        arc-gtk-theme
+
+22) Getting Wi-Fi connection
+
+    My machine has the Broadcom BCM 43142 driver for Wifi. Figure out the wifi driver that your machine uses. Broadcom BCM 43142 requires broadcom-wl-dkms package.
+
+    # pacman -S broadcom-wl-dkms
+
+    To load the new module, run the following commands as root:
+    # rmmod b43 b43legacy bcm43xx bcma brcm80211 brcmfmac brcmsmac ssb wl
+    # modprobe wl
+
+    Also, install Network Manager Applet to get the Wifi icon applet.
+    # pacman -S network-manager-applet
 
 23) Reboot the system. The LXDM login manager and MATE DE along with the Wifi will work after rebooting the system.
 
-    $ sudo reboot
+    # reboot
 
 24) Get the Sound working on your system
 
@@ -253,14 +241,28 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
 
     Press M and unmute the channels and keep increasing the volume levels on all channels to your likings. Check the sound systems.
 
-25) Install tlp
+25) Getting OS_PROBER to detect other Operating Systems
+
+	We have to enable os_prober to detect other operating systems present on your system. Also I have configured GRUB to remember your previously booted system. This is better and more convinient.
+
+    # vim /etc/default/grub
+
+    And uncomment or add the below three lines.
+        GRUB_DISABLE_OS_PROBER=false
+        GRUB_DEFAULT=saved
+        GRUB_SAVEDEFAULT=true
+
+    Regenerate the GRUB configuration file again.
+    # grub-mkconfig -o /boot/grub/grub.cfg
+    
+26) Install tlp
     $ sudo pacman -S tlp
 
     $ sudo tlp-stat
 
     Do the necessary implementations and generate the symlinks and enable the tlp services.
 
-26) Use all cores for compiling.
+27) Use all cores for compiling.
 
 	Go to /etc/makepkg.conf file. Search for "MAKEFLAGS". Replace the "-j2" with "-j$(nproc)".
 
@@ -268,7 +270,7 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
 
 	This uses all cores when compiling now.
 
-27) Pacman hooks to clean package cache and to deal with .pacnew files
+28) Pacman hooks to clean package cache and to deal with .pacnew files
 
         $ sudo mkdir /etc/pacman.d/hooks
 
@@ -306,7 +308,7 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
                         When = PostTransaction
                         Exec = /usr/bin/pacdiff
 
-28) Journal Size Limit
+29) Journal Size Limit
 
         The maximum size of the persistent journal can be controlled by uncommenting and changing the following:
 
@@ -318,12 +320,12 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
 
         $ sudo systemctl restart systemd-journald.service
 
-29) Install AUR helper like yay.
+30) Install AUR helper like yay.
 
 	Download the PKGBUILD of yay from https://aur.archlinux.org/packages/yay/ .
 
 	Install pamac-aur, google-chrome, brave-bin, downgrade, mate-tweak and other packages you want from AUR.
 
-30) Configure the keyboard shortcuts in the DE and change the DE settings.
+31) Configure the keyboard shortcuts in the DE and change the DE settings.
 
-31) Update and reboot.
+32) Update and reboot.

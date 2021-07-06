@@ -11,7 +11,7 @@ echo "################################################################"
 
 echo "HOSTNAME"
 echo arch > /etc/hostname
-cat > /etc/hosts <<EOF
+cat > /etc/hosts << EOF
 127.0.0.1   localhost
 ::1         localhost
 127.0.1.1   arch.localdomain	arch
@@ -28,19 +28,9 @@ passwd
 echo "################################################################"
 
 echo "INSTALLATION OF GRUB BOOT LOADER"
-pacman -S grub efibootmgr os-prober ntfs-3g intel-ucode --noconfirm
+pacman -S grub efibootmgr os-prober ntfs-3g --noconfirm
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 echo "################################################################"
 
-echo "ENABLING OS_PROBER TO DETECT OTHER OPERATING SYSTEMS"
-echo 'GRUB_DISABLE_OS_PROBER=false' > /etc/default/grub
-echo 'GRUB_DEFAULT=saved' > /etc/default/grub
-echo 'GRUB_SAVEDEFAULT=true' > /etc/default/grub
-grub-mkconfig -o /boot/grub/grub.cfg
-echo "################################################################"
-
-echo "EXIT AND REBOOT"
-exit
-exit
-#reboot
+echo "EXIT AND REBOOT NOW"
