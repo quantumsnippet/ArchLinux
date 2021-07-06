@@ -18,21 +18,21 @@ So, in the CLI environment use curl to get my scipts and give it the permission 
 Script 1  
 ```bash
     curl -LJO https://raw.githubusercontent.com/quantumsnippet/ArchLinux/master/01_baseInstall.sh > 01_baseInstall.sh
-    sudo chmod +x 01_baseInstall.sh
+    chmod +x 01_baseInstall.sh
     ./01_baseInstall.sh
 ```
 
 Script 2  
 ```bash
     curl -LJO https://raw.githubusercontent.com/quantumsnippet/ArchLinux/master/02_baseInstall.sh > 02_baseInstall.sh
-    sudo chmod +x 02_baseInstall.sh
+    chmod +x 02_baseInstall.sh
     ./02_baseInstall.sh
 ```
 
 Script 3  
 ```bash
     curl -LJO https://raw.githubusercontent.com/quantumsnippet/ArchLinux/master/03_postBaseInstall.sh > 03_postBaseInstall.sh
-    sudo chmod +x 03_postBaseInstall.sh
+    chmod +x 03_postBaseInstall.sh
     ./03_postBaseInstall.sh
 ```
 
