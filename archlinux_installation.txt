@@ -79,7 +79,7 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
 
 11) Localization
 
-    vim /etc/locale.gen
+    # vim /etc/locale.gen
 
     Uncomment the language en_IN UTF-8 and save it. Now generate the locale.
     # locale-gen
