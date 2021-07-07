@@ -207,9 +207,6 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
         curl
         wget
         gvim (for +clipboard support for copy pasting between system clipboard and vim buffers)
-        vim-airline
-        vim-airline-themes
-        vim-syntastic
         qbittorrent
         xfce4-terminal
         keepassxc
@@ -223,7 +220,7 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
     # pacman -S broadcom-wl-dkms
 
     To load the new module, run the following commands as root:
-    # rmmod b43 b43legacy bcm43xx bcma brcm80211 brcmfmac brcmsmac ssb wl
+    # rmmod b43 b43legacy bcm43xx bcma brcm80211 brcmfmac brcmsmac ssb tg3 wl
     # modprobe wl
 
     Also, install Network Manager Applet to get the Wifi icon applet.
