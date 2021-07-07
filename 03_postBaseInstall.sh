@@ -25,7 +25,7 @@ systemctl enable lxdm.service
 echo "################################################################"
 
 echo "INSTALLING MY REQUIRED PACKAGES"
-pacman -S pacman-contrib p7zip unrar zip unzip gvfs gvfs-mtp youtube-dl vlc libreoffice-fresh firefox htop neofetch gdb geany bleachbit ranger git curl wget gvim vim-airline vim-airline-themes vim-syntastic qbittorrent xfce4-terminal keepassxc gimp arc-gtk-theme --noconfirm
+pacman -S pacman-contrib p7zip unrar zip unzip gvfs gvfs-mtp youtube-dl vlc libreoffice-fresh firefox htop neofetch gdb geany bleachbit ranger git curl wget gvim qbittorrent xfce4-terminal keepassxc gimp arc-gtk-theme 
 echo "################################################################"
 
 echo "INSTALLING PACKAGES FOR PLAYING SOUND"
@@ -34,7 +34,7 @@ echo "################################################################"
 
 echo "WIFI CONNECTION"
 pacman -S broadcom-wl-dkms network-manager-applet --noconfirm
-rmmod b43 b43legacy bcm43xx bcma brcm80211 brcmfmac brcmsmac ssb wl
+rmmod b43 b43legacy bcm43xx bcma brcm80211 brcmfmac brcmsmac ssb tg3 wl
 modprobe wl
 echo "################################################################"
 
