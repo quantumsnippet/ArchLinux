@@ -21,22 +21,22 @@ echo "################################################################"
 sleep 15
 
 echo "FORMATTING THE EFI PARTITION"
-mkfs.fat -F32 /dev/sda8
+mkfs.fat -F32 /dev/sda10
 echo "################################################################"
 
 echo "FORMATTING THE SWAP PARTITION AND ACTIVATING IT"
-mkswap /dev/sda9
-swapon /dev/sda9
+mkswap /dev/sda11
+swapon /dev/sda11
 echo "################################################################"
 
 echo "FORMATTING THE ROOT PARTITION"
-mkfs.ext4 /dev/sda10
+mkfs.ext4 /dev/sda12
 echo "################################################################"
 
 echo "MOUNTING THE FILE SYSTEMS"
-mount /dev/sda10 /mnt
+mount /dev/sda12 /mnt
 mkdir /mnt/boot
-mount /dev/sda8 /mnt/boot
+mount /dev/sda10 /mnt/boot
 echo "################################################################"
 
 echo "INSTALLING ESSENTIAL PACKAGES USING PACSTRAP"
