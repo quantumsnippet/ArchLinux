@@ -211,7 +211,8 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
         xfce4-terminal
         keepassxc
         gimp
-        arc-gtk-theme
+        rofi
+        openssh
 
 22) Getting Wi-Fi connection
 
@@ -222,9 +223,11 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
     To load the new module, run the following commands as root:
     # rmmod b43 b43legacy bcm43xx bcma brcm80211 brcmfmac brcmsmac ssb tg3 wl
     # modprobe wl
+
+    Update the dependencies using depmod
 	# depmod -a
 
-    Also, install Network Manager Applet to get the Wifi icon applet.
+    Also, install Network Manager Applet to get the Wifi icon applet. And install nm-connection-editor for managing frontend of NetworkManager connections.
     # pacman -S network-manager-applet nm-connection-editor
 
 23) Reboot the system. The LXDM login manager and MATE DE along with the Wifi will work after rebooting the system.
@@ -253,22 +256,30 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
     Regenerate the GRUB configuration file again.
     # grub-mkconfig -o /boot/grub/grub.cfg
     
-26) Install tlp
-    $ sudo pacman -S tlp
+26) Install tlp and other Power Management tools
+    $ sudo pacman -S tlp x86_energy_perf_policy
 
     $ sudo tlp-stat
 
-    Do the necessary implementations and generate the symlinks and enable the tlp services.
+    Enable the tlp services.
+    $ sudo systemctl enable tlp.service
+    $ sudo systemctl mask systemd-rfkill.service
+    $ sudo systemctl mask systemd-rfkill.socket
 
 27) Use all cores for compiling.
 
-	Go to /etc/makepkg.conf file. Search for "MAKEFLAGS". Replace the "-j2" with "-j$(nproc)".
+	Go to /etc/makepkg.conf file. Search for "MAKEFLAGS". Replace the "-j2" with "-j$(nproc)" and uncomment that line.
 
 	$ sudo vim /etc/makepkg.conf
 
 	This uses all cores when compiling now.
 
 28) Pacman hooks to clean package cache and to deal with .pacnew files
+    
+    Uncomment the HookDir line in pacman.conf file.
+    $ sudo vim /etc/pacman.conf
+
+    And uncomment the HookDir line.
 
         $ sudo mkdir /etc/pacman.d/hooks
 
@@ -312,7 +323,7 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
 
         $ sudo vim /etc/systemd/journald.conf
 
-			SystemMaxUse=100M
+			SystemMaxUse=50M
 
         Restart the systemd-journald.service after changing this setting to apply the new limit.
 
