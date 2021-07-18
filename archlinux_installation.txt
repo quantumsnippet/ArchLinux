@@ -28,9 +28,9 @@ ARCHLINUX INSTALL PROCEDURE FOR UEFI SYSTEMS
 
    Here you do the necessary partitioning.
 
-   /boot partition		- 512M				 - sda10	 - EFI System
-   SWAP partition		- 2G				 - sda11  - Linux swap
-   / (Root) partition 	- Rest of the system - sda12 - Linux filesystem
+   /boot partition		- 512M				 - sda8	 - EFI System
+   SWAP partition		- 2G				 - sda9  - Linux swap
+   / (Root) partition 	- Rest of the system - sda10 - Linux filesystem
 
    Do the partitioning and write it. Check your partitioning again using #lsblk.
 
