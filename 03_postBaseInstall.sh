@@ -33,17 +33,10 @@ pacman -S pulseaudio pulseaudio-alsa pavucontrol alsa-utils alsa-plugins alsa-li
 echo "################################################################"
 
 echo "INSTALLING TLP"
-pacman -S tlp x86_energy_perf_policy
+pacman -S tlp x86_energy_perf_policy --noconfirm
 systemctl enable tlp.service
 systemctl mask systemd-rfkill.service
 systemctl mask systemd-rfkill.socket
-echo "################################################################"
-
-echo "ENABLING OS-PROBER TO DETECT OTHER OPERATING SYSTEMS"
-echo GRUB_DISABLE_OS_PROBER=false > /etc/default/grub
-echo GRUB_DEFAULT=saved > /etc/default/grub
-echo GRUB_SAVEDEFAULT=true > /etc/default/grub
-grub-mkconfig -o /boot/grub/grub.cfg
 echo "################################################################"
 
 echo "CREATING PACMAN HOOKS TO CLEAN PACKAGE CACHE AND DEALING WITH PACNEW FILES"
